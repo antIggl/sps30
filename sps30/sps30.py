@@ -55,6 +55,7 @@ class SPS30():
     R_ARTICLE_CD = [0xD0, 0x25]
     R_SERIAL_NUM = [0xD0, 0x33]
     RESET        = [0xD3, 0x04]
+    R_VERSION    = [0xD1, 0x00]
 
     NO_ERROR = 1
     ARTICLE_CODE_ERROR = -1
@@ -106,6 +107,28 @@ class SPS30():
         self.bus.i2c_rdwr(write)
 
         read = i2c_msg.read(self.SPS_ADDR, 48)
+        self.bus.i2c_rdwr(read)
+
+        for i in range(read.len):
+            result.append(bytes_to_int(read.buf[i]))
+
+        if checkCRC(result):
+            for i in range(2, len(result), 3):
+                device_serial.append(chr(result[i-2]))
+                device_serial.append(chr(result[i-1]))
+            return str("".join(device_serial))
+        else:
+            return self.SERIAL_NUMBER_ERROR
+
+
+    def read_device_version(self):
+        result = []
+        device_version = []
+
+        write = i2c_msg.write(self.SPS_ADDR, self.R_VERSION)
+        self.bus.i2c_rdwr(write)
+
+        read = i2c_msg.read(self.SPS_ADDR, 3)
         self.bus.i2c_rdwr(read)
 
         for i in range(read.len):
