@@ -136,9 +136,9 @@ class SPS30():
 
         if checkCRC(result):
             for i in range(2, len(result), 3):
-                device_serial.append(chr(result[i-2]))
-                device_serial.append(chr(result[i-1]))
-            return str("".join(device_serial))
+                device_version.append(chr(result[i-2]))
+                device_version.append(chr(result[i-1]))
+            return str("".join(device_version))
         else:
             return self.SERIAL_NUMBER_ERROR
 
